@@ -1,0 +1,24 @@
+{
+  "name": "node.js-html-static-content",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dotnetcurry/node.js-html-static-content.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dotnetcurry/node.js-html-static-content/issues"
+  },
+  "homepage": "https://github.com/dotnetcurry/node.js-html-static-content#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-interceptor": "^1.2.0"
+  }
+}
