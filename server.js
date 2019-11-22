@@ -17,63 +17,6 @@ var finalParagraphInterceptor = interceptor(function(req, res){
 		}
 	};
 })
-app.get('/login', function (req, res) {
-	res.send('Hello Login!');
-});
-app.get('*', function (req, res) {
-	console.log(req.url);
-	var s= req.url;
-
-	sendFileContent(res, s.slice(1, s.length), "text/html");
-});
-
-app.use(finalParagraphInterceptor);
-
-//app.use(express.static(__dirname + '/public/'));
-
-// app.get('/', function (req, res) {
-// 	res.send('Hello Dev!');
-// });
-//
-// app.get('/index', function (req, response, next) {
-// 	console.log(JSON.stringify(req.cookies))
-// 	response.redirect('/');
-// 	next();
-// 	//sendFileContent(response, "index.html", "text/html");
-// })
-//
-// app.use(function(req, res, next) {
-// 	console.log(req.user);
-// 	if (req.user===undefined)
-// 	{
-// 		res.redirect('/login');
-// 	}
-// 	next();
-// });
-
-app.listen(5000, function () {
-	console.log('Dev app listening on port 5000!');
-});
-// http.createServer(function(request, response) {
-//
-// 	if(request.url === "/index"){
-// 		sendFileContent(response, "index.html", "text/html");
-// 	}
-// 	else if(request.url === "/"){
-// 		response.writeHead(200, {'Content-Type': 'text/html'});
-// 		response.write('<b>Hey there!</b><br /><br />This is the default response. Requested URL is: ' + request.url);
-// 	}
-// 	else if(/^\/[a-zA-Z0-9\/]*.js$/.test(request.url.toString())){
-// 		sendFileContent(response, request.url.toString().substring(1), "text/javascript");
-// 	}
-// 	else if(/^\/[a-zA-Z0-9\/]*.css$/.test(request.url.toString())){
-// 		sendFileContent(response, request.url.toString().substring(1), "text/css");
-// 	}
-// 	else{
-// 		console.log("Requested URL is: " + request.url);
-// 		response.end();
-// 	}
-// }).listen(3000);
 
 function sendFileContent(response, fileName, contentType){
 	fs.readFile(fileName, function(err, data){
@@ -88,4 +31,72 @@ function sendFileContent(response, fileName, contentType){
 		response.end();
 	});
 }
+
+function removeFirstCharacterOf(str) {
+	return str.slice(1, str.length);
+}
+
+function generateHTMLLinkForFile(file, folder) {
+	const parent =  "/" + folder + "/";
+	console.log(parent,"parent");
+	return '<a href="' + parent+file + '">' + file + '</a><br\>'
+}
+
+function handleFolder(requestURL, response) {
+	const folder = removeFirstCharacterOf(requestURL);
+	console.log(folder, 'folder');
+	const files = fs.readdirSync(folder);
+
+	const fileLinks = files.map((f)=> {
+		return generateHTMLLinkForFile(f, folder)
+	} )
+	const htmlContent = '<html> <body>'+ fileLinks.join('')+
+		'</body> </html>'
+	response.writeHeader(200, {"Content-Type": "text/html"});
+	response.write(htmlContent);
+	response.end();
+
+}
+
+app.get('/login', function (req, res) {
+	res.send('Hello Login!');
+});
+app.get('/', function (req,response) {
+	handleFolder("/public", response);
+})
+
+const mainFolder ="public";
+
+app.get('*', function (request, response) {
+	const requestURL = request.url;
+
+	function handleHTMLFiles() {
+			var fileName = removeFirstCharacterOf(requestURL);
+			sendFileContent(response,fileName, "text/html");
+	}
+	function handleDownloadabelFiles() {
+		response.download(`${__dirname}${requestURL}`);
+	}
+
+	const isAHTMLFile = requestURL.indexOf('.html') >0;
+	console.log("isAHTMLFile", isAHTMLFile);
+	const isFileDownloadable = requestURL.indexOf('.pdf') >0;
+	if(isAHTMLFile)
+		handleHTMLFiles();
+	else if(isFileDownloadable)
+		handleDownloadabelFiles();
+	else
+		handleFolder(requestURL, response);
+
+})
+
+app.use(finalParagraphInterceptor);
+
+
+app.listen(5000, function () {
+	console.log('Dev app listening on port 5000!');
+});
+
+
+
 
