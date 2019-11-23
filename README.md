@@ -9,7 +9,7 @@ Note - Image has to be built after every code change to get latest changes to th
 
 ## Run the application
 
-`docker run -p 5000:5000 -v /tmp/htmls:/home/node/app/public  reportsapp:1.0`
+`docker run -p 5000:5000 -v /tmp/htmls:/home/node/app/public  --name reports_server reportsapp:1.0`
 
 ### Note
 
