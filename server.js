@@ -3,12 +3,15 @@ var fs = require("fs");
 var express = require('express');
 var app = express();
 var interceptor = require('express-interceptor');
-
+var authMW = require('./authenticationMiddleware');
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
+app.use(authMW());
 var finalParagraphInterceptor = interceptor(function(req, res){
 	return {
 		// Only HTML responses will be intercepted
 		isInterceptable: function(){
-			return /text\/html/.test(res.get('Content-Type'));
+			return true;
 		},
 		// Appends a paragraph at the end of the response body
 		intercept: function(body, send) {
@@ -17,6 +20,8 @@ var finalParagraphInterceptor = interceptor(function(req, res){
 		}
 	};
 })
+
+
 
 function sendFileContent(response, fileName, contentType){
 	fs.readFile(fileName, function(err, data){
@@ -37,7 +42,7 @@ function removeFirstCharacterOf(str) {
 }
 
 function generateHTMLLinkForFile(file, folder) {
-	const parent =  "/" + folder + "/";
+	const parent = "/bahmnireports"+ "/" + folder + "/";
 	console.log(parent,"parent");
 	return '<a href="' + parent+file + '">' + file + '</a><br\>'
 }
@@ -58,7 +63,7 @@ function handleFolder(requestURL, response) {
 
 }
 
-app.get('/login', function (req, res) {
+app.get('/bahmni/home/index.html#/login', function (req, res) {
 	res.send('Hello Login!');
 });
 app.get('/', function (req,response) {
@@ -81,17 +86,20 @@ app.get('*', function (request, response) {
 	const isAHTMLFile = requestURL.indexOf('.html') >0;
 	console.log("isAHTMLFile", isAHTMLFile);
 	const isFileDownloadable = requestURL.indexOf('.pdf') >0;
-	if(isAHTMLFile)
-		handleHTMLFiles();
-	else if(isFileDownloadable)
-		handleDownloadabelFiles();
-	else
-		handleFolder(requestURL, response);
+	try {
+		if (isAHTMLFile)
+			handleHTMLFiles();
+		else if (isFileDownloadable)
+			handleDownloadabelFiles();
+		else
+			handleFolder(requestURL, response);
+	}catch (e) {
+		console.log(e,"error");
+	}
 
 })
 
 app.use(finalParagraphInterceptor);
-
 
 app.listen(5000, function () {
 	console.log('Dev app listening on port 5000!');

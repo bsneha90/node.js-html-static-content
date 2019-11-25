@@ -20,5 +20,8 @@
   "dependencies": {
     "express": "^4.17.1",
     "express-interceptor": "^1.2.0"
+  },
+  "devDependencies": {
+    "cookie-parser": "^1.4.4"
   }
 }
