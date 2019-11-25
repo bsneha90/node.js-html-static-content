@@ -2,24 +2,10 @@
 var fs = require("fs");
 var express = require('express');
 var app = express();
-var interceptor = require('express-interceptor');
 var authMW = require('./authenticationMiddleware');
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 app.use(authMW());
-var finalParagraphInterceptor = interceptor(function(req, res){
-	return {
-		// Only HTML responses will be intercepted
-		isInterceptable: function(){
-			return true;
-		},
-		// Appends a paragraph at the end of the response body
-		intercept: function(body, send) {
-			if(req.url === '/admin.html')
-				res.redirect("/login")
-		}
-	};
-})
 
 
 
@@ -99,7 +85,6 @@ app.get('*', function (request, response) {
 
 })
 
-app.use(finalParagraphInterceptor);
 
 app.listen(5000, function () {
 	console.log('Dev app listening on port 5000!');
