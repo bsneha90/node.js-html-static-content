@@ -1,4 +1,3 @@
-// var http = require('http');
 var fs = require("fs");
 var express = require('express');
 var app = express();
@@ -6,7 +5,6 @@ var authMW = require('./authenticationMiddleware');
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 app.use(authMW());
-
 
 
 function sendFileContent(response, fileName, contentType){
@@ -54,6 +52,10 @@ app.get('/bahmni/home/index.html#/login', function (req, res) {
 });
 app.get('/', function (req,response) {
 	handleFolder("/public", response);
+})
+
+app.get('/not-privleged', function (req,response) {
+	response.send('Not privileged!');
 })
 
 const mainFolder ="public";
