@@ -51,7 +51,16 @@ app.get('/bahmni/home/index.html#/login', function (req, res) {
 	res.send('Hello Login!');
 });
 app.get('/', function (req,response) {
-	handleFolder("/public", response);
+	const exec = require('child_process').exec;
+	const myShellScript = exec('sh scripts/run-R-script.sh');
+	myShellScript.stdout.on('data', (data)=>{
+		console.log(data);
+		handleFolder("/public", response);
+	});
+	myShellScript.stderr.on('data', (data)=>{
+		console.error(data);
+		handleFolder("/public", response);
+	});
 })
 
 app.get('/not-privleged', function (req,response) {
