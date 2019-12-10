@@ -51,16 +51,33 @@ app.get('/bahmni/home/index.html#/login', function (req, res) {
 	res.send('Hello Login!');
 });
 app.get('/', function (req,response) {
-	const exec = require('child_process').exec;
-	const myShellScript = exec('sh scripts/run-R-script.sh');
-	myShellScript.stdout.on('data', (data)=>{
-		console.log(data);
-		handleFolder("/public", response);
-	});
-	myShellScript.stderr.on('data', (data)=>{
-		console.error(data);
-		handleFolder("/public", response);
-	});
+	handleFolder("/public", response);
+})
+
+app.get('/trigger', function (req,response) {
+	var handleClick = function () {
+		const exec = require('child_process').exec;
+		const myShellScript = exec('sh scripts/run-R-script.sh');
+		myShellScript.stdout.on('data', (data)=>{
+			console.log(data);
+		});
+		myShellScript.stderr.on('data', (data)=>{
+			console.error(data);
+		});
+	}
+
+	var htmlContent=`<html>
+	<body>
+	
+	<h2>The Button Element</h2>
+	<button type="button" onclick="${handleClick()}">Click Me!</button>
+	 
+	</body>
+	</html>`;
+
+	response.writeHeader(200, {"Content-Type": "text/html"});
+	response.write(htmlContent);
+	response.end();
 })
 
 app.get('/not-privleged', function (req,response) {
