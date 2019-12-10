@@ -54,31 +54,41 @@ app.get('/', function (req,response) {
 	handleFolder("/public", response);
 })
 
-app.get('/trigger', function (req,response) {
-	var handleClick = function () {
-		const exec = require('child_process').exec;
-		const myShellScript = exec('sh scripts/run-R-script.sh');
-		myShellScript.stdout.on('data', (data)=>{
-			console.log(data);
-		});
-		myShellScript.stderr.on('data', (data)=>{
-			console.error(data);
-		});
-	}
-
-	var htmlContent=`<html>
-	<body>
-	
-	<h2>The Button Element</h2>
-	<button type="button" onclick="${handleClick()}">Click Me!</button>
-	 
-	</body>
-	</html>`;
-
-	response.writeHeader(200, {"Content-Type": "text/html"});
-	response.write(htmlContent);
-	response.end();
+app.get('/triggerData', function (req, response) {
+	const exec = require('child_process').exec;
+	const myShellScript = exec('sh scripts/run-R-script.sh');
+	myShellScript.stdout.on('data', (data)=>{
+		console.log(data);
+		response.writeHead(200, {'Content-Type': "text/html"});
+		response.write(data);
+		response.end();
+	});
+	myShellScript.stderr.on('data', (data)=>{
+		console.error(data);
+		response.writeHead(200, {'Content-Type': "text/html"});
+		response.write("Error");
+		response.end();
+	});
 })
+
+// app.get('/trigger', function (req,response, next) {
+// 	var handleClick = function () {
+// 		return response.redirect('/triggerData');
+// 	}
+//
+// 	var htmlContent=`<html>
+// 	<body>
+//
+// 	<h2>The Button Element</h2>
+// 	<button type="button" onclick="${handleClick()}">Click Me!</button>
+//
+// 	</body>
+// 	</html>`;
+//
+// 	response.writeHeader(200, {"Content-Type": "text/html"});
+// 	response.write(htmlContent);
+// 	next();
+// })
 
 app.get('/not-privleged', function (req,response) {
 	response.send('Not privileged!');
