@@ -32,7 +32,7 @@ module.exports = function (options) {
                         console.log(error);
                         throw new Error(error);
                     }
-                    else if(response.statusCode === 403){
+                    else if(response.statusCode === 403 || response.statusCode === 401){
                         res.redirect("/bahmni/home/index.html#/login");
                     }
                     else {
