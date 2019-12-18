@@ -1,1 +1,1 @@
-docker run -v /etc/oca_data/reports:/reports -e PGRES_PWD_OCA=$PGRES_PWD_OCA reportsserver
+nohup docker run -v /etc/oca_data/reports:/reports -e PGRES_PWD_OCA=$PGRES_PWD_OCA reportsserver

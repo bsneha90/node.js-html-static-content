@@ -8,6 +8,4 @@ RUN apt update && \
  apt update && \
  apt install docker-ce-cli && \
  chmod u+x scripts/run-R-script.sh
-WORKDIR /home/node/app
-VOLUME /home/node/app/public
-CMD ["npm","start"]
+CMD ["node","server.js"]
